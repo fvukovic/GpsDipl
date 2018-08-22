@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="hr.foi.air.buuterknige.ListOnline"
+    android:background="#5fb0c9"
     >
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"

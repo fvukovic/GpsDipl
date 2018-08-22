@@ -7,6 +7,7 @@
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="create_an_account">Create an Account</string>
-    <string name="joint">Joint</string>
+    <string name="joint">Join</string>
     <string name="unjoint">Unjoin</string>
+    <string name="title_activity_map_tracking">Map</string>
 </resources>

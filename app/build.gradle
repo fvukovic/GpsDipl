@@ -21,6 +21,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.android.gms:play-services-maps:10.2.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -42,6 +43,7 @@ dependencies {
     implementation 'com.android.support:design:25.1.0'
     implementation 'com.firebaseui:firebase-ui-auth:1.2.0'
     implementation 'com.firebaseui:firebase-ui-database:1.2.0'
+
 
 
 }
