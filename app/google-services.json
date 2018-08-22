@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "813107359233",
+    "firebase_url": "https://my-project-d64c9.firebaseio.com",
+    "project_id": "my-project-d64c9",
+    "storage_bucket": "my-project-d64c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813107359233:android:16f102247ad57663",
+        "android_client_info": {
+          "package_name": "hr.foi.air.buuterknige"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "813107359233-3tupo63j8vt95d99v1iftmibg5otmdq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9nDJggxDboGze_PEFTHkQ7mOVEkZ9_Ig"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

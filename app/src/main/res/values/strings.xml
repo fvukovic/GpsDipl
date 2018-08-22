@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BuuterKnige</string>
+    <string name="enter">Log in</string>
+    <string name="log_out">Log out</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="preference">Preference</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="joint">Joint</string>
+    <string name="unjoint">Unjoin</string>
+</resources>

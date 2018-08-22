@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/activity_join"
+        android:orderInCategory="100"
+        android:title="@string/joint"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/activity_unjoin"
+        android:orderInCategory="100"
+        android:title="@string/unjoint"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/activity_logout"
+        android:orderInCategory="100"
+        android:title="@string/log_out"
+        app:showAsAction="never" />
+</menu>
