@@ -2,6 +2,9 @@ package hr.foi.air.buuterknige;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
+import hr.foi.air.buuterknige.Adapter.ViewPagerAdapter;
+import hr.foi.air.buuterknige.Fragments.ActiveFriendsFragment;
+import hr.foi.air.buuterknige.Fragments.FragmentAllUsers;
+import hr.foi.air.buuterknige.Fragments.FriendsFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
 //    @BindView(R.id.btn_enter)
 //    Button btnEnter;
 //
-    @BindView(R.id.btn_logout)
-    Button btnLogOut;
+//    @BindView(R.id.btn_logout)
+//    Button btnLogOut;
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -50,21 +57,41 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawer;
 
 
+    private TabLayout tabLayout;
+    private AppBarLayout appBarLayout;
+    private ViewPager viewPager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         CurrentActivity.setActivity(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.showOverflowMenu();
-        setSupportActionBar(toolbar);
+      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      //  toolbar.showOverflowMenu();
+      //  setSupportActionBar(toolbar);
 
-//        ButterKnife.bind(this);
+ //       ButterKnife.bind(this);
         firebaseAuth = FirebaseAuth.getInstance();
         CurrentFirebaseAuth.setFirebaseAuth(firebaseAuth);
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("users");
+
+
+        tabLayout = (TabLayout) findViewById(R.id.tablayout_id);
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbarid);
+        viewPager = (ViewPager) findViewById(R.id.viewpagerid);
+
+        // Adding fragments
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new FragmentAllUsers(), "All users" );
+        adapter.addFragment(new FriendsFragment(), "Friends");
+        adapter.addFragment(new ActiveFriendsFragment(), "Active friends");
+
+        //Adapter setup
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

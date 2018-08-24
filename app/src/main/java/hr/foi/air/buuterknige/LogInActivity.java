@@ -54,7 +54,7 @@ public class LogInActivity extends AppCompatActivity {
         CurrentFirebaseAuth.setFirebaseAuth(firebaseAuth);
         if(firebaseAuth.getCurrentUser() != null){
             finish();
-            startActivity(new Intent(this, ListOnline.class));
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 
@@ -88,7 +88,7 @@ public class LogInActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if (task.isSuccessful()) {
-                    Intent i = new Intent(getApplicationContext(), ListOnline.class);
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                     finish();
                     logedIn = true;
