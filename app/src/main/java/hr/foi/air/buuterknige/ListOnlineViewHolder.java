@@ -6,11 +6,14 @@ import android.widget.TextView;
 
 public class ListOnlineViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     public TextView txtEmail;
-    ItemClickListener itemClickListener;
+    public TextView txtUserName;
+    public ItemClickListener itemClickListener;
+
 
     public ListOnlineViewHolder(View itemView) {
         super(itemView);
-        txtEmail = (TextView)itemView.findViewById(R.id.txt_email);
+        txtEmail = (TextView)itemView.findViewById(R.id.phone_contact);
+        txtUserName = (TextView) itemView.findViewById(R.id.name_contact);
         itemView.setOnClickListener(this);
     }
 
@@ -23,4 +26,6 @@ public class ListOnlineViewHolder extends RecyclerView.ViewHolder implements Vie
         itemClickListener.onClick(view,getAdapterPosition());
 
     }
+
+
 }

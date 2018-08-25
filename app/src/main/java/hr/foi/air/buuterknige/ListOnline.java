@@ -210,7 +210,7 @@ public class ListOnline extends AppCompatActivity implements GoogleApiClient.Con
                 if (dataSnapshot.getValue(Boolean.class)) {
                     currentUserRef.onDisconnect().removeValue();
                     counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online"));
+                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online", FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -250,7 +250,7 @@ public class ListOnline extends AppCompatActivity implements GoogleApiClient.Con
         switch (id) {
             case R.id.activity_join:
                 counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online"));
+                        .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
                 break;
 
             case R.id.activity_unjoin:
