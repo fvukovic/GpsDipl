@@ -10,4 +10,7 @@
     <string name="joint">Join</string>
     <string name="unjoint">Unjoin</string>
     <string name="title_activity_map_tracking">Map</string>
+    <string name="name">Name</string>
+    <string name="register">Create new user</string>
+    <string name="logIn">Log In</string>
 </resources>

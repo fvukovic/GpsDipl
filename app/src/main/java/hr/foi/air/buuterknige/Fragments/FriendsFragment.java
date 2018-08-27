@@ -345,7 +345,7 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                 if (dataSnapshot.getValue(Boolean.class)) {
                     currentUserRef.onDisconnect().removeValue();
                     counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseDatabase.getInstance().getReference().child("username").toString()));
+                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
                     adapter.notifyDataSetChanged();
                 }
             }

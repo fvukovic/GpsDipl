@@ -1,19 +1,24 @@
 package hr.foi.air.buuterknige;
 
 
+import android.widget.TextView;
+
+import java.lang.ref.SoftReference;
+
 public class User {
 
     public String email;
     public String username;
     public String status;
+    public String password;
 
     public User() {
 
     }
-//    public User(String email, String status) {
-//        this.email = email;
-//        this.status = status;
-//    }
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
     public User(String email, String status, String username) {
         this.email = email;
         this.status = status;

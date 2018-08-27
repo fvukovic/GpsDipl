@@ -72,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         CurrentActivity.setActivity(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.appbarid);
         setSupportActionBar(toolbar);
+
 
  //       ButterKnife.bind(this);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         tabLayout = (TabLayout) findViewById(R.id.tablayout_id);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbarid);
+   //     appBarLayout = (AppBarLayout) findViewById(R.id.appbarid);
         viewPager = (ViewPager) findViewById(R.id.viewpagerid);
 
         // Adding fragments
@@ -107,15 +108,27 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.activity_logout) {
-           logOut();
+        DatabaseReference counterRef = FirebaseDatabase.getInstance().getReference("lastOnline");
+        DatabaseReference currentUserRef = FirebaseDatabase.getInstance().getReference("lastOnline")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        switch (id) {
+            case R.id.activity_join:
+                counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
+                break;
+
+            case R.id.activity_unjoin:
+                currentUserRef.removeValue();
+                break;
+            case R.id.activity_logout:
+                currentUserRef.removeValue();
+                logOut();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     public void logOut() {
