@@ -13,4 +13,11 @@
     <string name="name">Name</string>
     <string name="register">Create new user</string>
     <string name="logIn">Log In</string>
+    <string name="send_request">Send Request</string>
+    <string name="request">request</string>
+    <string name="request_type">request_type</string>
+    <string name="received">received</string>
+    <string name="friend_add_key">friend_add_key</string>
+
+
 </resources>

@@ -69,7 +69,6 @@ public class FragmentRegister extends Fragment {
        return myMainView;
     }
 
-
     public void registerUser() {
 
         final String email = emailEdit.getText().toString();

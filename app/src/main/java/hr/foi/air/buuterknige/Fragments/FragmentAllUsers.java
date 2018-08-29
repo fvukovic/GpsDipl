@@ -2,8 +2,6 @@ package hr.foi.air.buuterknige.Fragments;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,15 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import hr.foi.air.buuterknige.AllUserHolder;
 import hr.foi.air.buuterknige.ItemClickListener;
 import hr.foi.air.buuterknige.R;
@@ -74,8 +67,8 @@ public class FragmentAllUsers extends Fragment {
                 v= inflater.inflate(R.layout.item_contact,null);
                 //final AllUsersHolder allUsersHolder = new AllUsersHolder(v);
 
-                myDialog = new Dialog(getContext());
-                myDialog.setContentView(R.layout.dialog_contact);
+//                myDialog = new Dialog(getContext());
+//                myDialog.setContentView(R.layout.dialog_contact);
 
 
 
@@ -97,26 +90,17 @@ public class FragmentAllUsers extends Fragment {
                     @Override
                     public void onClick(View view, int position) {
 
-                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        TextView dialogEmail = (TextView) myDialog.findViewById(R.id.dialog_phone_id);
-                        TextView dialoguserName = (TextView) myDialog.findViewById(R.id.dialog_name_id);
-
-                        dialogEmail.setText(model.getEmail());
-                        dialoguserName.setText(model.getUsername());
-                        Button btnRequest = (Button) myDialog.findViewById(R.id.dialog_btn_message);
-                        btnRequest.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Toast.makeText(getContext(), "Haloooooooooo", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        myDialog.show();
-
+                        FragmentDialog fragmentDialog = new FragmentDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("username", model.getUsername());
+                        bundle.putString("email",model.getEmail());
+                        bundle.putString("friendId",getRef(position).getKey());
+                        fragmentDialog.setArguments(bundle);
+                        fragmentDialog.show(getFragmentManager(), "FragmentDialog");
                     }
                 };
             }
         };
         myFriendsList.setAdapter(firebaseRecyclerAdapter);
     }
-
 }

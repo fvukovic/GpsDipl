@@ -319,7 +319,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                     @Override
                     public void onClick(View view, int position) {
 
-                        Toast.makeText(getContext(), "Tu si", Toast.LENGTH_SHORT).show();
                         if (!model.getEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
                             Intent map = new Intent(getContext(), MapTracking.class);
                             map.putExtra("email", model.getEmail());
