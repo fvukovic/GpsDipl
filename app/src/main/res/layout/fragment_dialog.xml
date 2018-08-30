@@ -45,6 +45,18 @@
             android:text="@string/send_request"
             android:layout_marginTop="10dp"
             android:layout_gravity="start" />
+        <Button
+            android:id="@+id/btn_decline_request"
+            android:padding="20dp"
+            android:textAlignment="textStart"
+            android:drawablePadding="20dp"
+            android:drawableLeft="@drawable/ic_close_black_24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:text="@string/decline_request"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="start" />
 
 
     </LinearLayout>

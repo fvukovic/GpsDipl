@@ -18,6 +18,7 @@
     <string name="request_type">request_type</string>
     <string name="received">received</string>
     <string name="friend_add_key">friend_add_key</string>
+    <string name="decline_request">Decline request</string>
 
 
 </resources>

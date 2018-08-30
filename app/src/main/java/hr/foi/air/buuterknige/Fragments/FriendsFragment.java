@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,11 +35,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import hr.foi.air.buuterknige.Friends;
 import hr.foi.air.buuterknige.ItemClickListener;
 import hr.foi.air.buuterknige.ListOnline;
 import hr.foi.air.buuterknige.ListOnlineViewHolder;
@@ -49,15 +54,15 @@ import hr.foi.air.buuterknige.User;
 
 public class FriendsFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
     private RecyclerView myFriendsList;
-    private DatabaseReference friendReference;
     private FirebaseAuth mAuth;
     private DatabaseReference usersReference;
-    String online_user_id;
+    private DatabaseReference onlinUsersReferemce;
     private View myMainView;
+    private FirebaseUser currentUser;
     Dialog myDialog;
 
     //iz list
-    DatabaseReference onlineRef,currentUserRef, counterRef, locations;
+    DatabaseReference onlineRef,currentUserRef, counterRef, locations, friendReference;
     FirebaseRecyclerAdapter <User,ListOnlineViewHolder> adapter;
 
     RecyclerView listOnline;
@@ -70,6 +75,7 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private Location mlastLocation;
+    private String onlineUserId;
 
     private static int UPDATE_INTERVAL = 5000;
     private static int FASTEST_INTERVAL = 3000;
@@ -85,23 +91,26 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         myMainView = inflater.inflate(R.layout.friends_fragment, container, false);
-//        myFriendsList = (RecyclerView) myMainView.findViewById(R.id.friends_recyclerview);
-//        mAuth = FirebaseAuth.getInstance();
-//        online_user_id = mAuth.getCurrentUser().getUid();
-//        friendReference = FirebaseDatabase.getInstance().getReference().child("users");
-//        usersReference = FirebaseDatabase.getInstance().getReference().child("users");
-//        myFriendsList.setLayoutManager(new LinearLayoutManager(getContext()));
+        myFriendsList = (RecyclerView) myMainView.findViewById(R.id.friends_recyclerview);
+        mAuth = FirebaseAuth.getInstance();
+        onlineUserId = mAuth.getCurrentUser().getUid();
+        currentUser = mAuth.getCurrentUser();
+        friendReference = FirebaseDatabase.getInstance().getReference().child("Friends").child(onlineUserId);
+        usersReference = FirebaseDatabase.getInstance().getReference().child("users");
+        myFriendsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
         listOnline = (RecyclerView) myMainView.findViewById(R.id.friends_recyclerview);
         listOnline.setHasFixedSize(true);
         listOnline.setLayoutManager(new LinearLayoutManager(getContext()));
+        onlineUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        friendReference = FirebaseDatabase.getInstance().getReference().child("Friends").child(onlineUserId);
 
         locations = FirebaseDatabase.getInstance().getReference("Locations");
         onlineRef = FirebaseDatabase.getInstance().getReference().child(".info/connected");
         counterRef = FirebaseDatabase.getInstance().getReference("lastOnline");
         currentUserRef = FirebaseDatabase.getInstance().getReference("lastOnline")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .child(onlineUserId);
 
 
 
@@ -121,8 +130,8 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
 
         }
 
-        setupSystem();
-        updateList();
+      //  onlineSettings();
+
         return myMainView;
     }
 
@@ -130,54 +139,64 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     public void onStart() {
         super.onStart();
 
-//        FirebaseRecyclerAdapter<User, FriendsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, FriendsViewHolder>
-//                (
-//                        User.class,
-//                        R.layout.item_contact,
-//                        FriendsViewHolder.class,
-//                        friendReference
-//                ) {
-//            @Override
-//            protected void populateViewHolder(final FriendsViewHolder viewHolder, final User model, int position) {
-//                viewHolder.setEmail(model.getEmail());
-//                viewHolder.setUsername(model.getUsername());
-//                View v;
-//                LayoutInflater inflater = (LayoutInflater)   getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//                v= inflater.inflate(R.layout.item_contact,null);
-//               // final FriendsViewHolder friendsViewHolder = new FriendsViewHolder(v);
-//
-//                myDialog = new Dialog(getContext());
-//                myDialog.setContentView(R.layout.dialog_contact);
-//                myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+        FirebaseRecyclerAdapter<Friends, FriendsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>
+                (
+                        Friends.class,
+                        R.layout.item_contact,
+                        FriendsViewHolder.class,
+                        friendReference
+                ) {
+            @Override
+            protected void populateViewHolder(final FriendsViewHolder viewHolder, final Friends model, int position) {
+               // viewHolder.setDate(model.getDate());
+
+                String listUserId = getRef(position).getKey();
+                usersReference.child(listUserId).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String username = dataSnapshot.child("username").getValue().toString();
+                        final String email = dataSnapshot.child("email").getValue().toString();
+
+                        if (dataSnapshot.hasChild("online")) {
+                            final Boolean onlineStatus = (boolean) dataSnapshot.child("online").getValue();
+                            viewHolder.setUserOnline(onlineStatus);
+                            viewHolder.itemClickListener = new ItemClickListener() {
+                                    @Override
+                                    public void onClick(View view, int position) {
+
+                                        if (onlineStatus == true) {
+                                            if (!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                                                Intent map = new Intent(getContext(), MapTracking.class);
+                                                map.putExtra("email", email);
+                                                map.putExtra("lat", mlastLocation.getLatitude());
+                                                map.putExtra("lng",mlastLocation.getLongitude());
+                                                startActivity(map);
+                                            }
+
+                                        } else if (onlineStatus == false) {
+                                            Toast.makeText(getContext(), "Korisnik nije online", Toast.LENGTH_SHORT).show();
+                                        }
 
 
 
-//                String list_user_id = getRef(position).getKey();
-//                usersReference.child(list_user_id).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                      //  String email = dataSnapshot.child("email").getValue().toString();
-//                      //  FriendsViewHolder.setEmail2(email);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-//                viewHolder.itemClickListener = new ItemClickListener() {
-//                    @Override
-//                    public void onClick(View view, int position) {
-//                        TextView dialogEmail = (TextView) myDialog.findViewById(R.id.dialog_phone_id);
-//                        TextView dialoguserName = (TextView) myDialog.findViewById(R.id.dialog_name_id);
-//                        dialogEmail.setText(model.getEmail());
-//                        dialoguserName.setText(model.getUsername());
-//                        myDialog.show();
-//                    }
-//                };
-//            }
-//        };
-//        myFriendsList.setAdapter(firebaseRecyclerAdapter);
+                                    }
+                                };
+
+                        }
+                        viewHolder.setUsername(username);
+                        viewHolder.setEmail(email);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        };
+        myFriendsList.setAdapter(firebaseRecyclerAdapter);
     }
 
     @Override
@@ -215,7 +234,7 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        static View mView;
+        View mView;
         ItemClickListener itemClickListener;
         public FriendsViewHolder(View itemView) {
             super(itemView);
@@ -227,9 +246,14 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
             this.itemClickListener = itemClickListener;
         }
 
+        public void setDate(String date) {
+           TextView sinceFriends = (TextView) mView.findViewById(R.id.phone_contact);
+           sinceFriends.setText(date);
+        }
 
 
-        public static void setEmail(String email) {
+
+        public void setEmail(String email) {
             TextView emailUser = (TextView) mView.findViewById(R.id.phone_contact);
             emailUser.setText(email);
         }
@@ -239,16 +263,18 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
             userName.setText(username);
         }
 
-        public static void setEmail2(String email) {
-            TextView emailUser2 = (TextView) mView.findViewById(R.id.phone_contact);
-            emailUser2.setText(email);
-        }
-
-
         @Override
         public void onClick(View view) {
             itemClickListener.onClick(view,getAdapterPosition());
 
+        }
+
+        public void setUserOnline(Boolean onlineStatus) {
+            ImageView onlineStatusDot = (ImageView) mView.findViewById(R.id.img_online);
+            if (onlineStatus == true) {
+                onlineStatusDot.setVisibility(View.VISIBLE);
+
+            } else onlineStatusDot.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -304,70 +330,93 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
         return true;
     }
 
-    private void updateList() {
-        adapter = new FirebaseRecyclerAdapter<User, ListOnlineViewHolder>(
-                User.class,
-                R.layout.item_contact,
-                ListOnlineViewHolder.class,
-                counterRef) {
-            @Override
-            protected void populateViewHolder(ListOnlineViewHolder viewHolder, final User model, int position) {
-                viewHolder.txtEmail.setText(model.getEmail());
-                viewHolder.txtUserName.setText(model.getUsername());
+//    private void updateList() {
+//        adapter = new FirebaseRecyclerAdapter<User, ListOnlineViewHolder>(
+//                User.class,
+//                R.layout.item_contact,
+//                ListOnlineViewHolder.class,
+//                counterRef) {
+//            @Override
+//            protected void populateViewHolder(ListOnlineViewHolder viewHolder, final User model, int position) {
+//
+//
+//                viewHolder.txtEmail.setText(model.getEmail());
+//                viewHolder.txtUserName.setText(model.getUsername());
+//
+//                viewHolder.itemClickListener = new ItemClickListener() {
+//                    @Override
+//                    public void onClick(View view, int position) {
+//
+//                        if (!model.getEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+//                            Intent map = new Intent(getContext(), MapTracking.class);
+//                            map.putExtra("email", model.getEmail());
+//                            map.putExtra("lat", mlastLocation.getLatitude());
+//                            map.putExtra("lng",mlastLocation.getLongitude());
+//                            startActivity(map);
+//
+//                        }
+//
+//                    }
+//                };
+//
+//            }
+//        };
+//        adapter.notifyDataSetChanged();
+//        listOnline.setAdapter(adapter);
+//    }
 
-                viewHolder.itemClickListener = new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position) {
+//    private void setupSystem() {
+//        onlineRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.getValue(Boolean.class)) {
+//                    currentUserRef.onDisconnect().removeValue();
+//                    counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+//                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//        counterRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot postSnapshot:dataSnapshot.getChildren()) {
+//                    User user = postSnapshot.getValue(User.class);
+//                    Log.d("LOG", ""+user.getEmail()+" is "+user.getStatus());
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled( DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-                        if (!model.getEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
-                            Intent map = new Intent(getContext(), MapTracking.class);
-                            map.putExtra("email", model.getEmail());
-                            map.putExtra("lat", mlastLocation.getLatitude());
-                            map.putExtra("lng",mlastLocation.getLongitude());
-                            startActivity(map);
+    public void onlineSettings () {
+        if (currentUser != null) {
+            onlinUsersReferemce = FirebaseDatabase.getInstance().getReference().child("users").child(onlineUserId);
+            onlinUsersReferemce.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        }
+                    onlinUsersReferemce.child("online").onDisconnect().setValue(false);
 
-                    }
-                };
 
-            }
-        };
-        adapter.notifyDataSetChanged();
-        listOnline.setAdapter(adapter);
-    }
-
-    private void setupSystem() {
-        onlineRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue(Boolean.class)) {
-                    currentUserRef.onDisconnect().removeValue();
-                    counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
-                    adapter.notifyDataSetChanged();
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-        counterRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot:dataSnapshot.getChildren()) {
-                    User user = postSnapshot.getValue(User.class);
-                    Log.d("LOG", ""+user.getEmail()+" is "+user.getStatus());
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled( DatabaseError databaseError) {
-
-            }
-        });
+        }
     }
 
 }

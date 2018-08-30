@@ -38,6 +38,7 @@ public class FragmentDialog extends DialogFragment{
     TextView txUsername;
     TextView txEmail;
     Button btnSendRequest;
+    Button btnDeclineRequest;
     String username;
     String email;
     View myMainView;
@@ -59,6 +60,7 @@ public class FragmentDialog extends DialogFragment{
         txUsername = (TextView) myMainView.findViewById(R.id.fragment_dialog_name_id);
         txEmail = (TextView) myMainView.findViewById(R.id.fragment_dialog_email_id);
         btnSendRequest = (Button) myMainView.findViewById(R.id.btn_send_request);
+        btnDeclineRequest = (Button) myMainView.findViewById(R.id.btn_decline_request);
 
         if (getArguments()!=null) {
             username = getArguments().getString("username","");
@@ -70,18 +72,45 @@ public class FragmentDialog extends DialogFragment{
         mReference.child(myId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-               if (dataSnapshot.exists()) {
-                   if (dataSnapshot.hasChild(friendId)) {
-                       String req_type = dataSnapshot.child(friendId).child("request_type").getValue().toString();
-                       if (req_type.equals("sent")) {
-                           CURRENT_STATE = "request_sent";
-                           btnSendRequest.setText("Cancel request");
-                       } else if (req_type.equals("received")) {
-                           CURRENT_STATE = "request_received";
-                           btnSendRequest.setText("Accept request");
-                       }
-                   }
-               }
+                    if (dataSnapshot.hasChild(friendId)) {
+                        String req_type = dataSnapshot.child(friendId).child("request_type").getValue().toString();
+                        if (req_type.equals("sent")) {
+                            CURRENT_STATE = "request_sent";
+                            btnSendRequest.setText("Cancel request");
+                            btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                            btnDeclineRequest.setEnabled(false);
+                        } else if (req_type.equals("received")) {
+                            CURRENT_STATE = "request_received";
+                            btnSendRequest.setText("Accept request");
+                            btnDeclineRequest.setVisibility(myMainView.VISIBLE);
+                            btnDeclineRequest.setEnabled(true);
+
+                            btnDeclineRequest.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    declineFriendRequest();
+                                }
+                            });
+                        }
+                    } else {
+                        friendReference.child(myId)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.hasChild(friendId)) {
+                                            CURRENT_STATE = "friends";
+                                            btnSendRequest.setText("Unfriend");
+                                            btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                            btnDeclineRequest.setEnabled(false);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                    }
             }
 
             @Override
@@ -90,24 +119,87 @@ public class FragmentDialog extends DialogFragment{
             }
         });
 
+        btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+        btnDeclineRequest.setEnabled(false);
 
+       if (!myId.equals(friendId)) {
+           btnSendRequest.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   btnSendRequest.setEnabled(false);
 
-        btnSendRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (CURRENT_STATE.equals("not_friends")) {
-                    sendFriendRequest();
-                }
-                if (CURRENT_STATE.equals("request_sent")) {
-                    cancelFriendRequest();
-                }
-                if (CURRENT_STATE.equals("request_received")) {
-                    acceptFriendRequest();
-                }
-            }
-        });
+                   if (CURRENT_STATE.equals("not_friends")) {
+                       sendFriendRequest();
+                   }
+                   if (CURRENT_STATE.equals("request_sent")) {
+                       cancelFriendRequest();
+                   }
+                   if (CURRENT_STATE.equals("request_received")) {
+                       acceptFriendRequest();
+                   }
+                   if (CURRENT_STATE.equals("friends")) {
+                       unFriend();
+                   }
+               }
+           });
+       } else {
+           btnSendRequest.setVisibility(myMainView.INVISIBLE);
+           btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+       }
         return myMainView;
+    }
+
+    private void declineFriendRequest() {
+        mReference.child(myId).child(friendId).removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            mReference.child(friendId).child(myId).removeValue()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                btnSendRequest.setEnabled(true);
+                                                CURRENT_STATE = "not_friends";
+                                                btnSendRequest.setText("Send request");
+
+                                                btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                                btnDeclineRequest.setEnabled(false);
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+    }
+
+    private void unFriend() {
+        friendReference.child(myId).child(friendId).removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            friendReference.child(friendId).child(myId).removeValue()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                btnSendRequest.setEnabled(true);
+                                                CURRENT_STATE = "not_friends";
+                                                btnSendRequest.setText("Send request");
+
+                                                btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                                btnDeclineRequest.setEnabled(false);
+                                            }
+                                        }
+                                    });
+                        }
+
+                    }
+                });
+
     }
 
     private void acceptFriendRequest() {
@@ -115,11 +207,11 @@ public class FragmentDialog extends DialogFragment{
         Calendar date = Calendar.getInstance();
         SimpleDateFormat currentDate = new SimpleDateFormat("dd-MMMM-yyyy");
         final String saveCurrentDate = currentDate.format(date.getTime());
-        friendReference.child(myId).child(friendId).setValue(saveCurrentDate)
+        friendReference.child(myId).child(friendId).child("date").setValue(saveCurrentDate)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        friendReference.child(friendId).child(myId).setValue(saveCurrentDate)
+                        friendReference.child(friendId).child(myId).child("date").setValue(saveCurrentDate)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -136,6 +228,8 @@ public class FragmentDialog extends DialogFragment{
                                                                                 btnSendRequest.setEnabled(true);
                                                                                 CURRENT_STATE = "friends";
                                                                                 btnSendRequest.setText("Unfriend");
+                                                                                btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                                                                btnDeclineRequest.setEnabled(false);
                                                                             }
                                                                         }
                                                                     });
@@ -164,6 +258,9 @@ public class FragmentDialog extends DialogFragment{
                                                 btnSendRequest.setEnabled(true);
                                                 CURRENT_STATE = "not_friends";
                                                 btnSendRequest.setText("Send request");
+
+                                                btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                                btnDeclineRequest.setEnabled(false);
                                             }
                                         }
                                     });
@@ -173,7 +270,6 @@ public class FragmentDialog extends DialogFragment{
     }
 
     private void sendFriendRequest() {
-        btnSendRequest.setEnabled(false);
             mReference.child(myId).child(friendId)
                     .child("request_type").setValue("sent")
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -189,6 +285,9 @@ public class FragmentDialog extends DialogFragment{
                                                     btnSendRequest.setEnabled(true);
                                                     CURRENT_STATE = "request_sent";
                                                     btnSendRequest.setText("Cancel request");
+
+                                                    btnDeclineRequest.setVisibility(myMainView.INVISIBLE);
+                                                    btnDeclineRequest.setEnabled(false);
                                                 }
                                             }
                                         });

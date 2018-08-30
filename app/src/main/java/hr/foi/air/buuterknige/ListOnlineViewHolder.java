@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class ListOnlineViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
     public TextView txtEmail;
     public TextView txtUserName;
     public ItemClickListener itemClickListener;

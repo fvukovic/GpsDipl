@@ -49,7 +49,8 @@
 
         <activity
             android:name=".MapTracking"
-            android:label="@string/title_activity_map_tracking"></activity>
+            android:label="@string/title_activity_map_tracking">
+        </activity>
     </application>
 
 </manifest>

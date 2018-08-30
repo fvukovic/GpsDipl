@@ -30,12 +30,6 @@ public class AllUserHolder extends RecyclerView.ViewHolder implements View.OnCli
         userName.setText(username);
     }
 
-    public static void setEmail2(String email) {
-        TextView emailUser2 = (TextView) mView.findViewById(R.id.phone_contact);
-        emailUser2.setText(email);
-    }
-
-
     @Override
     public void onClick(View view) {
         itemClickListener.onClick(view,getAdapterPosition());
