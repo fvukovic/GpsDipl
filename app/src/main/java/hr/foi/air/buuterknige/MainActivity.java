@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,13 +37,12 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private ImageView userOnlineStatus;
+    View mView;
 
     private String onlineUserId;
     private FirebaseUser currentUser;
     private DatabaseReference onlinUsersReferemce;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +56,13 @@ public class MainActivity extends AppCompatActivity {
         onlineUserId = mAuth.getCurrentUser().getUid();
         currentUser = mAuth.getCurrentUser();
         onlinUsersReferemce = FirebaseDatabase.getInstance().getReference().child("users").child(onlineUserId);
-
+        userOnlineStatus = (ImageView) findViewById(R.id.img_onlineMain);
         if (currentUser == null) {
             logOut();
         }
         else if (currentUser != null) {
             onlinUsersReferemce.child("online").setValue(true);
+            userOnlineStatus.setVisibility(View.VISIBLE);
         }
 
  //       ButterKnife.bind(this);
@@ -92,15 +95,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
-
         switch (id) {
             case R.id.activity_join:
                 onlinUsersReferemce.child("online").setValue(true);
+                userOnlineStatus.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.activity_unjoin:
                 onlinUsersReferemce.child("online").setValue(false);
+                userOnlineStatus.setVisibility(View.INVISIBLE);
                 break;
             case R.id.activity_logout:
                 onlinUsersReferemce.child("online").setValue(false);

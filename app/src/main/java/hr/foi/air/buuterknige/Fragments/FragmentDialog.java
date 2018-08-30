@@ -55,8 +55,6 @@ public class FragmentDialog extends DialogFragment{
         mAuth = FirebaseAuth.getInstance();
         myId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
-
         txUsername = (TextView) myMainView.findViewById(R.id.fragment_dialog_name_id);
         txEmail = (TextView) myMainView.findViewById(R.id.fragment_dialog_email_id);
         btnSendRequest = (Button) myMainView.findViewById(R.id.btn_send_request);

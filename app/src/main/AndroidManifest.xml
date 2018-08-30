@@ -27,9 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListOnline"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />

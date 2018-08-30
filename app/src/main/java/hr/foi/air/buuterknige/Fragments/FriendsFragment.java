@@ -3,13 +3,9 @@ package hr.foi.air.buuterknige.Fragments;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,8 +14,6 @@ import android.support.v4.app.Fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +38,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import hr.foi.air.buuterknige.Friends;
 import hr.foi.air.buuterknige.ItemClickListener;
-import hr.foi.air.buuterknige.ListOnline;
 import hr.foi.air.buuterknige.ListOnlineViewHolder;
 import hr.foi.air.buuterknige.MapTracking;
 import hr.foi.air.buuterknige.R;
@@ -59,16 +52,9 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     private DatabaseReference onlinUsersReferemce;
     private View myMainView;
     private FirebaseUser currentUser;
-    Dialog myDialog;
 
-    //iz list
     DatabaseReference onlineRef,currentUserRef, counterRef, locations, friendReference;
-    FirebaseRecyclerAdapter <User,ListOnlineViewHolder> adapter;
-
     RecyclerView listOnline;
-    RecyclerView.LayoutManager layoutManager;
-
-
 
     private static final int MY_PERMISSION_REQUEST_CODE = 7171;
     private static final int PLAY_SERVICES_RES_REQUEST = 7172;
@@ -99,20 +85,11 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
         usersReference = FirebaseDatabase.getInstance().getReference().child("users");
         myFriendsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-        listOnline = (RecyclerView) myMainView.findViewById(R.id.friends_recyclerview);
-        listOnline.setHasFixedSize(true);
-        listOnline.setLayoutManager(new LinearLayoutManager(getContext()));
-        onlineUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        friendReference = FirebaseDatabase.getInstance().getReference().child("Friends").child(onlineUserId);
-
         locations = FirebaseDatabase.getInstance().getReference("Locations");
         onlineRef = FirebaseDatabase.getInstance().getReference().child(".info/connected");
         counterRef = FirebaseDatabase.getInstance().getReference("lastOnline");
         currentUserRef = FirebaseDatabase.getInstance().getReference("lastOnline")
                 .child(onlineUserId);
-
-
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -125,24 +102,15 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                 buildGoogleApiClient();
                 createLocationRequest();
                 displayLocation();
-
             }
-
         }
-
-      //  onlineSettings();
-
         return myMainView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-
-
-        FirebaseRecyclerAdapter<Friends, FriendsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>
-                (
+        FirebaseRecyclerAdapter<Friends, FriendsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(
                         Friends.class,
                         R.layout.item_contact,
                         FriendsViewHolder.class,
@@ -178,12 +146,8 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                                         } else if (onlineStatus == false) {
                                             Toast.makeText(getContext(), "Korisnik nije online", Toast.LENGTH_SHORT).show();
                                         }
-
-
-
                                     }
                                 };
-
                         }
                         viewHolder.setUsername(username);
                         viewHolder.setEmail(email);
@@ -203,7 +167,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     public void onConnected(@Nullable Bundle bundle) {
         displayLocation();
         startLocationUpdates();
-
     }
 
     private void startLocationUpdates() {
@@ -228,7 +191,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
     public void onLocationChanged(Location location) {
         mlastLocation = location;
         displayLocation();
-
     }
 
 
@@ -266,14 +228,12 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
         @Override
         public void onClick(View view) {
             itemClickListener.onClick(view,getAdapterPosition());
-
         }
 
         public void setUserOnline(Boolean onlineStatus) {
             ImageView onlineStatusDot = (ImageView) mView.findViewById(R.id.img_online);
             if (onlineStatus == true) {
                 onlineStatusDot.setVisibility(View.VISIBLE);
-
             } else onlineStatusDot.setVisibility(View.INVISIBLE);
         }
     }
@@ -290,8 +250,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                             FirebaseAuth.getInstance().getCurrentUser().getUid(),
                             String.valueOf(mlastLocation.getLatitude()),
                             String.valueOf(mlastLocation.getLongitude())));
-        } else {
-            Toast.makeText(getContext(), "Couldn't get the location", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -301,9 +259,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationRequest.setSmallestDisplacement(DISTANCE);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-
-
     }
 
     private void buildGoogleApiClient() {
@@ -312,8 +267,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API).build();
         mGoogleApiClient.connect();
-
-
     }
 
     private boolean checkPlayServices() {
@@ -329,74 +282,6 @@ public class FriendsFragment extends Fragment implements GoogleApiClient.Connect
         }
         return true;
     }
-
-//    private void updateList() {
-//        adapter = new FirebaseRecyclerAdapter<User, ListOnlineViewHolder>(
-//                User.class,
-//                R.layout.item_contact,
-//                ListOnlineViewHolder.class,
-//                counterRef) {
-//            @Override
-//            protected void populateViewHolder(ListOnlineViewHolder viewHolder, final User model, int position) {
-//
-//
-//                viewHolder.txtEmail.setText(model.getEmail());
-//                viewHolder.txtUserName.setText(model.getUsername());
-//
-//                viewHolder.itemClickListener = new ItemClickListener() {
-//                    @Override
-//                    public void onClick(View view, int position) {
-//
-//                        if (!model.getEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
-//                            Intent map = new Intent(getContext(), MapTracking.class);
-//                            map.putExtra("email", model.getEmail());
-//                            map.putExtra("lat", mlastLocation.getLatitude());
-//                            map.putExtra("lng",mlastLocation.getLongitude());
-//                            startActivity(map);
-//
-//                        }
-//
-//                    }
-//                };
-//
-//            }
-//        };
-//        adapter.notifyDataSetChanged();
-//        listOnline.setAdapter(adapter);
-//    }
-
-//    private void setupSystem() {
-//        onlineRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.getValue(Boolean.class)) {
-//                    currentUserRef.onDisconnect().removeValue();
-//                    counterRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                            .setValue(new User(FirebaseAuth.getInstance().getCurrentUser().getEmail(),"Online",FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
-//                    adapter.notifyDataSetChanged();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//        counterRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for (DataSnapshot postSnapshot:dataSnapshot.getChildren()) {
-//                    User user = postSnapshot.getValue(User.class);
-//                    Log.d("LOG", ""+user.getEmail()+" is "+user.getStatus());
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled( DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 
     public void onlineSettings () {
         if (currentUser != null) {

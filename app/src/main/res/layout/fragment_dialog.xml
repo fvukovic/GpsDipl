@@ -65,7 +65,7 @@
         android:id="@+id/dialog_img_id"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/females_female_avatar_woman_people_faces_18401"
+        android:src="@drawable/salesman"
         android:padding="10dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"

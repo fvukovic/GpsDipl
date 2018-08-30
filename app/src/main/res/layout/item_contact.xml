@@ -11,7 +11,8 @@
     <ImageView
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:src="@mipmap/ic_launcher_round"
+        android:background="@color/backgroundColor"
+        android:src="@drawable/salesman"
         android:id="@+id/img_contact" />
 
     <LinearLayout
@@ -46,6 +47,7 @@
             android:id="@+id/img_online"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginTop="10dp"
             android:src="@mipmap/dot"
             android:visibility="invisible" />
     </LinearLayout>

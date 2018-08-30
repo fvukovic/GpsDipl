@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5fb0c9"
+    android:background="@color/backgroundColor"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -30,8 +30,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/name"
-                android:textColor="#d67601"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:textColor="#d67601" />
 
             <EditText
                 android:id="@+id/input_nameNew"
@@ -44,8 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/username"
-                android:textColor="#d67601"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:textColor="#d67601" />
 
             <EditText
                 android:id="@+id/input_emailNew"
@@ -57,29 +57,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/password"
-                android:textColor="#d67601"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:textColor="#d67601" />
 
             <EditText
                 android:id="@+id/input_passwordNew"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:password="true"
-                />
+                android:password="true" />
+
             <TextView
                 android:id="@+id/lbl_password1New"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:textColor="#d67601"
-                android:textAllCaps="false" />
+                android:text="@string/c_password"
+                android:textAllCaps="false"
+                android:textColor="#d67601" />
 
             <EditText
                 android:id="@+id/input_confirmPassNew"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:password="true"
-                />
+                android:password="true" />
 
             <Button
                 android:id="@+id/btn_register"
@@ -87,10 +86,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="22dp"
                 android:background="#d67601"
+                android:text="@string/register"
                 android:textAllCaps="false"
                 android:textColor="#fff"
-                android:textSize="18sp"
-                android:text="@string/register" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/lbl_logIn"
@@ -105,15 +104,8 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <ImageButton
-        android:id="@+id/user_profile_photo"
-        android:layout_width="107dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/user_profile_image_background"
-        android:elevation="4dp"
-        android:src="@drawable/login1" />
+
+
 
 
 </FrameLayout>

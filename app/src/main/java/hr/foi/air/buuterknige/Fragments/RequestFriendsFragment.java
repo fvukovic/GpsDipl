@@ -93,7 +93,6 @@ public class RequestFriendsFragment extends Fragment {
                                                 fragmentDialog.show(getFragmentManager(), "FragmentDialog");
                                             }
                                         };
-
                                     }
 
                                     @Override

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +21,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
-import hr.foi.air.buuterknige.LogInActivity;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import hr.foi.air.buuterknige.MainActivity;
 import hr.foi.air.buuterknige.R;
 
@@ -37,6 +38,7 @@ public class FragmentLogIn extends Fragment {
     private boolean logedIn;
     EditText passwordEdit;
     Button btnLogIn;
+    ProgressBar progressBar;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,9 +48,15 @@ public class FragmentLogIn extends Fragment {
         passwordEdit = (EditText) myMainView.findViewById(R.id.input_password);
         btnLogIn = (Button) myMainView.findViewById(R.id.btn_enter);
 
+        progressBar = (ProgressBar) myMainView.findViewById(R.id.progressBar2);
+        progressBar.setVisibility(myMainView.GONE);
+
+
+
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 logIn();
             }
         });
@@ -61,6 +69,7 @@ public class FragmentLogIn extends Fragment {
             public void onClick(View view) {
                 FragmentTransaction fr = getFragmentManager().beginTransaction();
                 fr.replace(R.id.fragment_container, new FragmentRegister());
+                fr.addToBackStack("FragmentLogIn");
                 fr.commit();
             }
         });
@@ -79,7 +88,7 @@ public class FragmentLogIn extends Fragment {
             Toast.makeText(getApplicationContext(), "Please enter password", Toast.LENGTH_LONG).show();
             return;
         } else {
-
+            progressBar.setVisibility(myMainView.VISIBLE);
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener((Activity)getContext(), new OnCompleteListener<AuthResult>() {
 
                 @Override
@@ -90,20 +99,39 @@ public class FragmentLogIn extends Fragment {
                         startActivity(i);
                         getActivity().finish();
                         logedIn = true;
-                    }
-                    else if (!task.isSuccessful()){
+
+                    } else if (!task.isSuccessful()){
                         Toast.makeText(getApplicationContext(),"Incorrect username or password: ", Toast.LENGTH_SHORT).show();
 
                     }
                 }
             });
+
+
         }
 
+    }
 
+    public void signIn() {
+        String email = emailEdit.getText().toString();
+        String password = passwordEdit.getText().toString();
+
+        if (isValidEmail(email)) {
+
+        }
+    }
+    private boolean isValidEmail(String email) {
+        String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
     }
 }

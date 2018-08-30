@@ -1,7 +1,4 @@
 package hr.foi.air.buuterknige;
-
-import android.util.DisplayMetrics;
-
 public class Friends {
     public String date;
 

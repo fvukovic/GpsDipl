@@ -22,11 +22,7 @@ public class AppPreferenceActivity extends PreferenceActivity implements SharedP
 
     }
 
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-//        (new Util()).setLanguage(this);
-//        this.recreate();
-//    }
+
 
     public static class AppPreferenceFragment extends PreferenceFragment {
         @Override

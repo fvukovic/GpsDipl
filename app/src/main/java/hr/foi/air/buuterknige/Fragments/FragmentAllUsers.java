@@ -28,7 +28,6 @@ public class FragmentAllUsers extends Fragment {
     private DatabaseReference usersReference;
     String online_user_id;
     private View myMainView;
-    Dialog myDialog;
 
     public FragmentAllUsers() {
     }
@@ -49,9 +48,7 @@ public class FragmentAllUsers extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        FirebaseRecyclerAdapter<User,AllUserHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, AllUserHolder>
-                (
+        FirebaseRecyclerAdapter<User,AllUserHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, AllUserHolder>(
                         User.class,
                         R.layout.item_contact,
                         AllUserHolder.class,
@@ -61,31 +58,6 @@ public class FragmentAllUsers extends Fragment {
             protected void populateViewHolder(final AllUserHolder viewHolder, final User model, int position) {
                 viewHolder.setEmail(model.getEmail());
                 viewHolder.setUsername(model.getUsername());
-
-                View v;
-                LayoutInflater inflater = (LayoutInflater)   getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v= inflater.inflate(R.layout.item_contact,null);
-                //final AllUsersHolder allUsersHolder = new AllUsersHolder(v);
-
-//                myDialog = new Dialog(getContext());
-//                myDialog.setContentView(R.layout.dialog_contact);
-
-
-
-
-//                String list_user_id = getRef(position).getKey();
-//                usersReference.child(list_user_id).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                      //  String email = dataSnapshot.child("email").getValue().toString();
-//                      //  FriendsViewHolder.setEmail2(email);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
                 viewHolder.itemClickListener = new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position) {
